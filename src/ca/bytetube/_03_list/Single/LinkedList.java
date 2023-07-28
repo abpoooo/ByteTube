@@ -1,4 +1,4 @@
-package ca.bytetube._03_list.doubly;
+package ca.bytetube._03_list.Single;
 
 import ca.bytetube._03_list.AbstractList;
 

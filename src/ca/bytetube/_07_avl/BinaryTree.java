@@ -1,7 +1,5 @@
-package ca.bytetube._06_tree;
+package ca.bytetube._07_avl;
 
-
-import ca.bytetube._00_leetcode._04_tree.TreeNode;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -284,6 +282,12 @@ public class BinaryTree<E> {
             return this.left == null && this.right == null;
         }
 
+        protected boolean isLeftChild() {
+            return parent != null && this == parent.left;
+        }
+        protected boolean isRightChild() {
+            return parent != null && this == parent.right;
+        }
         @Override
         public String toString() {
             return "element=" + element;
