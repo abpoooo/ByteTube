@@ -38,8 +38,6 @@ public class InvertBinaryTree {
         if (root == null) return null;
 //        System.out.println(node.element + " ");
 
-
-
         invertTree3(root.left);
         invertTree3(root.right);
         TreeNode temp = root.left;
