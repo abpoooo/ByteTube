@@ -10,7 +10,7 @@ public class BinarySearchTreeIterator {
     List<Integer> list;
     int next = 0; //initial index;
 
-    public BSTIterator(TreeNode root) {
+    public void BSTIterator(TreeNode root) {
         this.list = new ArrayList<>();
 
         dfs(root); //collect all the values to the given list using in-order traversal of tree
