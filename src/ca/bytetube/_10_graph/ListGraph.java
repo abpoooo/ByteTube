@@ -191,21 +191,151 @@ public class ListGraph<V, E> extends Graph<V, E> {
 
         }
     }
-    private Set<Vertex<V, E>> visitedVertices = new HashSet<>();
+
     @Override
-    public void dfs(V begin) {
+    public void bfs(V begin, VertexVisitor<V> visitor) {
         Vertex<V, E> beginVertex = vertices.get(begin);
         if (beginVertex == null) return;
 
         Set<Vertex<V, E>> visitedVertices = new HashSet<>();
-        System.out.print(beginVertex.value + " ");
+        Queue<Vertex<V, E>> queue = new LinkedList<>();
 
-        for (Edge<V, E> outEdge : beginVertex.outEdges) {
-            if (visitedVertices.contains(outEdge.to)) continue;
-            dfs(outEdge.to.value);
+        queue.add(beginVertex);
+        visitedVertices.add(beginVertex);
+
+        while (!queue.isEmpty()){
+            Vertex<V, E> poll = queue.poll();
+            if (visitor.visit(poll.value)) return;
+            System.out.print(poll.value + "");
+
+            for (Edge<V, E> outEdge : poll.outEdges) {
+                if (visitedVertices.contains(outEdge.to)) continue;
+                queue.offer(outEdge.to);
+                visitedVertices.add(outEdge.to);
+
+            }
 
         }
+    }
 
+
+
+// recursion edition for dfs
+
+    public void dfs1(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+        dfs1(beginVertex, new HashSet<>());
+    }
+
+
+    private void dfs1(Vertex<V, E> beginVertex, Set<Vertex<V, E>> visitedVertices) {
+
+        System.out.print(beginVertex.value + " ");
+        visitedVertices.add(beginVertex);
+        for (Edge<V, E> outEdge : beginVertex.outEdges) {
+            if (visitedVertices.contains(outEdge.to)) continue;
+            dfs1(outEdge.to, visitedVertices);
+        }
+    }
+
+    // dfs non-recursion edition
+
+    /**
+     * 1.先将起点放入stack中， 将起点从中弹出并打印， 并且存入set中
+     * 2. 选择弹出顶点的的一条outage， 将这条的from to按顺序放入栈中
+     * 3. 再将栈顶元素弹出并打印最终放入set中
+     */
+    @Override
+    public void dfs(V begin) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+        Stack<Vertex<V, E>> stack = new Stack<>();
+        Set<Vertex<V, E>> visitedVertices = new HashSet<>();
+//        1.先将起点放入stack中， 将起点从中弹出并打印， 并且存入set中
+        stack.push(beginVertex);
+        System.out.print(beginVertex.value + " ");
+        visitedVertices.add(beginVertex);
+        while (!stack.isEmpty()){
+//            2. 选择弹出顶点的的一条outage， 将这条的from to按顺序放入栈中
+            Vertex<V, E> vertex = stack.pop();
+            for (Edge<V, E> edge : vertex.outEdges){
+                if (visitedVertices.contains(edge.to)) continue;
+                stack.push(edge.from);
+                stack.push(edge.to);
+                System.out.print(edge.to.value + " ");
+                visitedVertices.add(edge.to);
+
+                break;
+            }
+        }
+
+    }
+
+
+    @Override
+    public void dfs(V begin, VertexVisitor<V> visitor) {
+        Vertex<V, E> beginVertex = vertices.get(begin);
+        if (beginVertex == null) return;
+        Stack<Vertex<V, E>> stack = new Stack<>();
+        Set<Vertex<V, E>> visitedVertices = new HashSet<>();
+//        1.先将起点放入stack中， 将起点从中弹出并打印， 并且存入set中
+        stack.push(beginVertex);
+        System.out.print(beginVertex.value + " ");
+        visitedVertices.add(beginVertex);
+        while (!stack.isEmpty()){
+//            2. 选择弹出顶点的的一条outage， 将这条的from to按顺序放入栈中
+            Vertex<V, E> vertex = stack.pop();
+            if (visitor.visit(vertex.value)) return;
+            for (Edge<V, E> edge : vertex.outEdges){
+                if (visitedVertices.contains(edge.to)) continue;
+                stack.push(edge.from);
+                stack.push(edge.to);
+                System.out.print(edge.to.value + " ");
+                visitedVertices.add(edge.to);
+
+                break;
+            }
+        }
+    }
+
+
+    /**
+     *
+     * 1. 需要准备一个map 用来存储图的inDegree信息， 一个queue（缓存） 一个list（存储结果）
+     * 2. 将graph中inDegree=0 的顶点放入queue， inDegree ！= 0的顶点放入map中
+     * 3. 出队queue的队头原粗， 放入list中， 并且更新map中的inDegree信息
+     * 4. 从map找到inDegree = 0 的顶点， 并放入queue中
+     * 5. 不断重复3， 4 过程直到queue为空
+     *
+     */
+    @Override
+    public List<V> toPoLogicalSort(V begin) {
+        //1. 需要准备一个map 用来存储图的inDegree信息， 一个queue（缓存） 一个list（存储结果）
+        Map<Vertex<V, E>, Integer> map = new HashMap<>();
+        Queue<Vertex<V, E>> queue = new LinkedList<>();
+        List<V> list = new LinkedList<>();
+
+        //2. 将graph中inDegree=0 的顶点放入queue， inDegree ！= 0的顶点放入map中
+        vertices.forEach((V v, Vertex<V, E> vertex) -> {
+            int in = vertex.inEdges.size();
+            if (in == 0) queue.offer(vertex);
+            else map.put(vertex, in);
+        });
+
+
+        while (!queue.isEmpty()){
+            //3. 出队queue的队头原粗， 放入list中， 并且更新map中的inDegree信息
+            Vertex<V, E> vertex = queue.poll();
+            list.add(vertex.value);
+            for (Edge<V, E> edge :vertex.outEdges) {
+                int toIn = map.get(edge.to) - 1;
+                //4. 从map找到inDegree = 0 的顶点， 并放入queue中
+                if (toIn == 0) queue.offer(edge.to);
+                else map.put(edge.to, toIn);
+            }
+        }
+        return list;
     }
 
 }

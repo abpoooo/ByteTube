@@ -9,6 +9,9 @@ public class Main {
 
     }
 
+    public static void test2(){
+//        unDirectGraph();
+    }
     public static void test1(){
         Graph<String, Integer> graph = new ListGraph<>();
 //        graph.addEdge("0", "1", null);
@@ -37,5 +40,38 @@ public class Main {
 //        graph.bfs("0");
         graph.dfs("a");
 
+    }
+    private static Graph<Object, Double> directGraph(Object[][] data){
+        Graph<Object, Double> graph = new ListGraph<>();
+        for (Object[] edge : data) {
+            if (edge.length == 1){
+                graph.addVertex(edge[0]);
+            }else if (edge.length == 2){
+                graph.addEdge(edge[0], edge[1]);
+            }else if (edge.length == 3){
+                double weight = Double.parseDouble(edge[2].toString());
+
+                graph.addEdge(edge[0], edge[1], weight);
+            }
+        }
+
+        return graph;
+    }
+
+    private static Graph<Object, Double> unDirectGraph(Object[][] data){
+        Graph<Object, Double> graph = new ListGraph<>();
+        for (Object[] edge : data) {
+            if (edge.length == 1){
+                graph.addVertex(edge[0]);
+            }else if (edge.length == 2){
+                graph.addEdge(edge[0], edge[1]);
+            }else if (edge.length == 3){
+                double weight = Double.parseDouble(edge[2].toString());
+
+                graph.addEdge(edge[0], edge[1], weight);
+            }
+        }
+
+        return graph;
     }
 }
