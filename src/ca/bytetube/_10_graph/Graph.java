@@ -42,6 +42,8 @@ public abstract class Graph<V, E> {
 
     public abstract Map<V, PathInfo<V, E>> shortestPath(V begin);
 
+    public abstract Map<V, Map<V, PathInfo<V, E>>> shortestPath(); //many to many points
+
     public static class PathInfo<V, E>{
         protected E weight;
         protected List<EdgeInfo<V, E>> edgeInfos = new LinkedList<>();
@@ -136,6 +138,8 @@ public abstract class Graph<V, E> {
     public interface WeightManager<E>{
         int compare(E w1, E w2);
         E add(E w1, E w2);
+
+        E zero();
     }
 
 }
