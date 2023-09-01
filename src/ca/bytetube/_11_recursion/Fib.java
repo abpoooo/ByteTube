@@ -82,4 +82,19 @@ public class Fib {
         return second;
     }
 
+    public int fib(int n) {
+        //fib(n) = fib(n - 1) + fib(n - 2) 递推式模型
+        //weakness 大量数据计算
+        if (n < 0 || n > 30) {
+            throw new RuntimeException("Illegal Input");
+        }
+        if (n <= 1) return n;
+        return fib(n,0, 1);
+    }
+
+    private int fib(int n, int first, int second) {
+        if (n <= 1) return second;
+        return fib(n - 1, second, first + second);
+    }
+
 }
